@@ -276,7 +276,7 @@ func NewFirmwareVolume(data []byte, fvOffset uint64, resizable bool) (*FirmwareV
 	var prevLen uint64
 	for offset := fv.DataOffset; offset < lh; offset += prevLen {
 		offset = Align8(offset)
-		file, err := NewFile(data[offset:])
+		file, err := NewFile(data[offset:], fvOffset + offset)
 		if err != nil {
 			return nil, fmt.Errorf("unable to construct firmware file at offset %#x into FV: %v", offset, err)
 		}

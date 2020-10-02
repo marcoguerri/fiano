@@ -187,7 +187,7 @@ func (rr *MERegion) FlashRegion() (fr *FlashRegion) {
 }
 
 // NewMERegion creates a new region.
-func NewMERegion(buf []byte, r *FlashRegion, rt FlashRegionType) (Region, error) {
+func NewMERegion(buf []byte, r *FlashRegion, rt FlashRegionType, offset uint64) (Region, error) {
 	rr := &MERegion{FRegion: r, RegionType: rt}
 	rr.buf = make([]byte, len(buf))
 	copy(rr.buf, buf)

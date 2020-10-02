@@ -273,7 +273,7 @@ func NewFlashImage(buf []byte) (*FlashImage, error) {
 			continue
 		}
 		if c, ok := regionConstructors[FlashRegionType(i)]; ok {
-			r, err := c(buf[fr.BaseOffset():fr.EndOffset()], &frs[i], FlashRegionType(i))
+			r, err := c(buf[fr.BaseOffset():fr.EndOffset()], &frs[i], FlashRegionType(i), uint64(fr.BaseOffset()))
 			if err != nil {
 				return nil, err
 			}

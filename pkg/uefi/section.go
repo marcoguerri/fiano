@@ -343,7 +343,7 @@ func (s *Section) GenSecHeader() error {
 
 // NewSection parses a sequence of bytes and returns a Section
 // object, if a valid one is passed, or an error.
-func NewSection(buf []byte, fileOrder int) (*Section, error) {
+func NewSection(buf []byte, fileOrder int, sectionOffset uint64) (*Section, error) {
 	s := Section{FileOrder: fileOrder}
 	// Read in standard header.
 	r := bytes.NewReader(buf)
@@ -406,7 +406,7 @@ func NewSection(buf []byte, fileOrder int) (*Section, error) {
 		}
 
 		for i, offset := 0, uint64(0); offset < uint64(len(encapBuf)); i++ {
-			encapS, err := NewSection(encapBuf[offset:], i)
+			encapS, err := NewSection(encapBuf[offset:], i, sectionOffset + offset)
 			if err != nil {
 				return nil, fmt.Errorf("error parsing encapsulated section #%d at offset %d: %v",
 					i, offset, err)
@@ -425,7 +425,7 @@ func NewSection(buf []byte, fileOrder int) (*Section, error) {
 		s.Version = unicode.UCS2ToUTF8(s.buf[headerSize+2:])
 
 	case SectionTypeFirmwareVolumeImage:
-		fv, err := NewFirmwareVolume(s.buf[headerSize:], 0, true)
+		fv, err := NewFirmwareVolume(s.buf[headerSize:], sectionOffset, true)
 		if err != nil {
 			return nil, err
 		}

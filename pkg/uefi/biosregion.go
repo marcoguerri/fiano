@@ -79,7 +79,7 @@ func (br *BIOSRegion) FlashRegion() (fr *FlashRegion) {
 // NewBIOSRegion parses a sequence of bytes and returns a Region
 // object, if a valid one is passed, or an error. It also points to the
 // Region struct uncovered in the ifd.
-func NewBIOSRegion(buf []byte, r *FlashRegion, _ FlashRegionType) (Region, error) {
+func NewBIOSRegion(buf []byte, r *FlashRegion, _ FlashRegionType, biosOffset uint64) (Region, error) {
 	br := BIOSRegion{FRegion: r, Length: uint64(len(buf)),
 		RegionType: RegionTypeBIOS}
 	var absOffset uint64
@@ -112,7 +112,7 @@ func NewBIOSRegion(buf []byte, r *FlashRegion, _ FlashRegionType) (Region, error
 			br.Elements = append(br.Elements, MakeTyped(bp))
 		}
 		absOffset += uint64(offset)                                  // Find start of volume relative to bios region.
-		fv, err := NewFirmwareVolume(buf[offset:], absOffset, false) // False as top level FVs are not resizable
+		fv, err := NewFirmwareVolume(buf[offset:], biosOffset+absOffset, false) // False as top level FVs are not resizable
 		if err != nil {
 			return nil, err
 		}

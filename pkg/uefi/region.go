@@ -96,7 +96,7 @@ func (r *FlashRegion) EndOffset() uint32 {
 	return (uint32(r.Limit) + 1) * RegionBlockSize
 }
 
-var regionConstructors = map[FlashRegionType]func(buf []byte, r *FlashRegion, rt FlashRegionType) (Region, error){
+var regionConstructors = map[FlashRegionType]func(buf []byte, r *FlashRegion, rt FlashRegionType, offset uint64) (Region, error){
 	RegionTypeBIOS:      NewBIOSRegion,
 	RegionTypeME:        NewMERegion,
 	RegionTypeGBE:       NewRawRegion,

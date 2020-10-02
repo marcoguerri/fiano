@@ -250,6 +250,7 @@ type File struct {
 	buf         []byte
 	ExtractPath string
 	DataOffset  uint64
+	AbsOffset   uint64
 }
 
 // Buf returns the buffer.
@@ -401,8 +402,8 @@ func CreatePadFile(size uint64) (*File, error) {
 // NewFile parses a sequence of bytes and returns a File
 // object, if a valid one is passed, or an error. If no error is returned and the File
 // pointer is nil, it means we've reached the volume free space at the end of the FV.
-func NewFile(buf []byte) (*File, error) {
-	f := File{}
+func NewFile(buf []byte, fileOffset uint64) (*File, error) {
+	f := File{AbsOffset: fileOffset}
 	f.DataOffset = FileHeaderMinLength
 	// Read in standard header.
 	r := bytes.NewReader(buf)
@@ -455,18 +456,18 @@ func NewFile(buf []byte) (*File, error) {
 	if _, ok := SupportedFiles[f.Header.Type]; !ok {
 		return &f, nil
 	}
-	for i, offset := 0, f.DataOffset; offset < f.Header.ExtendedSize; i++ {
-		s, err := NewSection(f.buf[offset:], i)
+	for i, dataOffset := 0, f.DataOffset; dataOffset < f.Header.ExtendedSize; i++ {
+		s, err := NewSection(f.buf[dataOffset:], i, fileOffset+dataOffset)
 		if err != nil {
 			return nil, fmt.Errorf("error parsing sections of file %v: %v", f.Header.GUID, err)
 		}
 		if s.Header.ExtendedSize == 0 {
 			return nil, fmt.Errorf("invalid length of section of file %v", f.Header.GUID)
 		}
-		offset += uint64(s.Header.ExtendedSize)
+		dataOffset += uint64(s.Header.ExtendedSize)
 		// Align to 4 bytes for now. The PI Spec doesn't say what alignment it should be
 		// but UEFITool aligns to 4 bytes, and this seems to work on everything I have.
-		offset = Align4(offset)
+		dataOffset = Align4(dataOffset)
 		f.Sections = append(f.Sections, s)
 	}
 

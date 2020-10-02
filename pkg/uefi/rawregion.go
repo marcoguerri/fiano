@@ -27,7 +27,7 @@ func (rr *RawRegion) FlashRegion() (fr *FlashRegion) {
 }
 
 // NewRawRegion creates a new region.
-func NewRawRegion(buf []byte, r *FlashRegion, rt FlashRegionType) (Region, error) {
+func NewRawRegion(buf []byte, r *FlashRegion, rt FlashRegionType, offset uint64) (Region, error) {
 	rr := &RawRegion{FRegion: r, RegionType: rt}
 	rr.buf = make([]byte, len(buf))
 	copy(rr.buf, buf)

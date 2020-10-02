@@ -151,7 +151,7 @@ func Parse(buf []byte) (Firmware, error) {
 	}
 	// Non intel image such as edk2's OVMF
 	// We don't know how to parse this header, so treat it as a large BIOSRegion
-	return NewBIOSRegion(buf, nil, RegionTypeBIOS)
+	return NewBIOSRegion(buf, nil, RegionTypeBIOS, 0)
 }
 
 // Checksum8 does a 8 bit checksum of the slice passed in.
